@@ -28,7 +28,6 @@ def get_e5_embeddings(model, tokenizer, sentences, path_save):
     embedding_dict[pairID] = (embedding, text1, text2, score)
   with open(path_save, 'wb') as handle:
     pickle.dump(embedding_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
-#   return [(sentences[i][3],scores[i]) for i in range(len(scores))]
     
 def get_sentence_transformer_embedding(model, sentences, path_save):
   embedding_dict = {}
@@ -42,13 +41,15 @@ def get_sentence_transformer_embedding(model, sentences, path_save):
     embedding_dict[pairID] = (torch.tensor(embedding).clone().detach(), text1, text2, score)
   with open(path_save, 'wb') as handle:
     pickle.dump(embedding_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
-#   return [(sentences[i][3],scores[i]) for i in range(len(scores))]
 
 def read_csv_dataset(path):
     raw_df = pd.read_csv(path)
     if 'translations' in path:
         xs1 = list(raw_df['Text1 Translation'])
         xs2 = list(raw_df['Text2 Translation'])
+    elif 'STS' in path:
+        xs1 = list(raw_df['Text1'])
+        xs2 = list(raw_df['Text2'])
     else:
         try:
             xs1, xs2 = map(list, zip(*[tuple(row['Text'].split('\n')) for idx, row in raw_df.iterrows()]))
@@ -64,6 +65,13 @@ languages = ["afr", "amh", "arb", "arq", "ary", "eng", "esp", "hau", "hin", "ind
 # target_lang = "tel2eng"
 
 paths = []
+paths.append((f'/home/amirzaei/code/SemEval2024_Task1/Data/STS/track4a_sts_esp_eng_test.csv', f'Embeddings/similarity/track4a_sts_esp_eng_test_MODELNAME.pickle'))
+paths.append((f'/home/amirzaei/code/SemEval2024_Task1/Data/STS/track4b_sts_esp_eng_test.csv', f'Embeddings/similarity/track4b_sts_esp_eng_test_MODELNAME.pickle'))
+paths.append((f'/home/amirzaei/code/SemEval2024_Task1/Data/STS/track5_eng_eng_test.csv', f'Embeddings/similarity/track5_eng_eng_test_MODELNAME.pickle'))
+paths.append((f'/home/amirzaei/code/SemEval2024_Task1/Data/STS/trans_track4a_sts_esp_eng_test.csv', f'Embeddings/similarity/trans_track4a_sts_esp_eng_test_MODELNAME.pickle'))
+paths.append((f'/home/amirzaei/code/SemEval2024_Task1/Data/STS/trans_track4b_sts_esp_eng_test.csv', f'Embeddings/similarity/trans_track4b_sts_esp_eng_test_MODELNAME.pickle'))
+paths.append((f'/home/amirzaei/code/SemEval2024_Task1/Data/STS/trans_eng_esp_dev.csv', f'Embeddings/similarity/trans_eng_esp_dev_MODELNAME.pickle'))
+paths.append((f'/home/amirzaei/code/SemEval2024_Task1/Data/STS/eng_esp_dev.csv', f'Embeddings/similarity/eng_esp_dev_MODELNAME.pickle'))
 for lang in languages:
     paths.append((f'Data/original/{lang}_train.csv', f'Embeddings/original/{lang}_train_MODELNAME.pickle'))
     paths.append((f'Data/original/{lang}_test_with_labels.csv', f'Embeddings/original/{lang}_test_MODELNAME.pickle'))
